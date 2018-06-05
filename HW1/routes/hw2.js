@@ -17,8 +17,12 @@ const words = mongoose.model('word', wordSchema);
 
 //No input, then get everything in the database
 router.get('', (req, res) =>{
+    let All_words = [];
     words.find(function(err, result){
-        res.json(result)
+        for(i=0; i <result.length; i++){
+            All_words.push(result[i].word)
+        }
+        res.json("All the strings so far: "+ All_words)
     });
 });
 
@@ -42,13 +46,17 @@ router.get('/:id', function(req, res){
         }
         //If it is in the Database, just return it
         else {
-            res.json(wording);
+            res.json({
+                "String": wording[0].word,
+                "Length": wording[0].length
+            });
+
         }
     })
 });
 
 //Post Request that returns the String and length of an Input
-//http://localhost:3000/hw1/input
+//http://localhost:3000/hw2
 router.post('', function(req, res){
     //If user did not enter a value
     if(req.body.word == ''){
@@ -58,7 +66,10 @@ router.post('', function(req, res){
         words.find({word: req.body.word}, function (err, result) {
             //If the user entered a word and there is data, then return it
             if (result != '') {
-                res.json(result)
+                res.json({
+                    "String": result[0].word,
+                    "Length": result[0].length
+                })
             }
             //If there is no data, add in the data
             else {
@@ -68,7 +79,10 @@ router.post('', function(req, res){
                 });
 
                 newWord.save();
-                res.json(newWord);
+                res.json({
+                    "String": newWord.word,
+                    "Length": newWord.length
+                });
             }
         });
     }
